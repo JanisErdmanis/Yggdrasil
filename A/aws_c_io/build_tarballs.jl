@@ -3,12 +3,11 @@
 using BinaryBuilder, Pkg
 
 name = "aws_c_io"
-version = v"0.18.1"
+version = v"0.23.2"
 
 # Collection of sources required to complete build
 sources = [
-    GitSource("https://github.com/awslabs/aws-c-io.git", "31d7361dd7517c54e697316fec6ded2ebe89fee9"),
-    DirectorySource("./bundled"),
+    GitSource("https://github.com/awslabs/aws-c-io.git", "1af325b54bba2e95a640a5be5ffe0b27e4ead79c"),
     ArchiveSource("https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.15.sdk.tar.xz",
                   "2408d07df7f324d3beea818585a6d990ba99587c218a3969f924dfcc4de93b62"),
 ]
@@ -35,8 +34,8 @@ find . -type f -exec sed -i -e 's/Windows.h/windows.h/g' \
      '{}' \;
 # Lowercase names for MinGW
 sed -i -e 's/Secur32/secur32/g' -e 's/Crypt32/crypt32/g' CMakeLists.txt
-# MinGW is missing some macros in sspi.h
-atomic_patch -p1 ../patches/win32_sspi_h_missing_macros.patch
+
+install_license LICENSE NOTICE
 
 mkdir build && cd build
 cmake -DCMAKE_INSTALL_PREFIX=${prefix} \
@@ -61,9 +60,9 @@ products = [
 
 # Dependencies that must be installed before this package can be built
 dependencies = [
-    Dependency("s2n_tls_jll"; compat="1.5.13"),
-    Dependency("aws_c_cal_jll"; compat="0.8.3"),
-    Dependency("aws_c_common_jll"; compat="0.11.1"),
+    Dependency("s2n_tls_jll"; compat="1.5.27", platforms=filter(p->Sys.islinux(p) || Sys.isfreebsd(p), platforms)),
+    Dependency("aws_c_cal_jll"; compat="0.9.4"),
+    Dependency("aws_c_common_jll"; compat="0.12.5"),
     BuildDependency("aws_lc_jll"),
 ]
 
